@@ -74,3 +74,16 @@ TEST_F(ArcSpec, ArcShouldBeThreadSafe) {
     ASSERT_TRUE(arc.is_valid());
     ASSERT_EQ(weak.ref_count(), 1);
 }
+
+TEST_F(ArcSpec, ArcShouldEraseType) {
+    auto arc = Arc<int>::make(42);
+    auto weak = Weak(arc);
+
+    auto erased = Arc<void>(arc);
+
+    auto reworked = static_arc_cast<int>(erased);
+    ASSERT_TRUE(erased.is_valid());
+    ASSERT_TRUE(reworked.is_valid());
+    ASSERT_EQ(*reworked, 42);
+    ASSERT_EQ(weak.ref_count(), 3);
+}

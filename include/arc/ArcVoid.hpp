@@ -21,6 +21,12 @@ public:
     return *this;
   }
 
+  template <typename U>
+  Arc(Arc<U> &other) noexcept : m_ptr(reinterpret_cast<SharedState<void>*>(other.m_ptr)) {
+    if (m_ptr)
+      m_ptr->m_ref_count.fetch_add(1, std::memory_order_relaxed);
+  }
+
   ~Arc() {
     if (m_ptr &&
         m_ptr->m_ref_count.fetch_sub(1, std::memory_order_acq_rel) == 1)
@@ -35,6 +41,9 @@ public:
   }
 
   bool is_valid() const noexcept { return m_ptr != nullptr; }
+
+  SharedState<void>* internal_ptr() noexcept { return m_ptr; }
+
   template <typename U> static Arc<void> cast_from(Arc<U> &arc) noexcept {
     return arc.erase_type();
   }
@@ -59,3 +68,9 @@ private:
 
   SharedState<void> *m_ptr;
 };
+
+template <typename T> Arc<T> static_arc_cast(Arc<void> &arc) noexcept {
+  auto ptr = reinterpret_cast<SharedState<T>*>(arc.internal_ptr());
+  ptr->m_ref_count.fetch_add(1, std::memory_order_relaxed);
+  return Arc<T>(ptr);
+}

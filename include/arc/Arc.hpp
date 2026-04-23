@@ -161,7 +161,7 @@ private:
 };
 
 template <typename T> Arc<void> Arc<T>::erase_type() const noexcept {
-  return Arc<void>(m_ptr);
+  return Arc<void>(reinterpret_cast<SharedState<void>*>(m_ptr));
 }
 
 template <typename T> Arc<T>::operator Arc<void>() const noexcept {
