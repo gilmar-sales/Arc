@@ -58,6 +58,10 @@ public:
     return std::nullopt;
   }
 
+  uint32_t ref_count() const noexcept {
+    return m_ptr->m_ref_count.load(std::memory_order_relaxed);
+  }
+
   bool expired() const noexcept {
     if (!m_ptr)
       return true;

@@ -32,3 +32,41 @@ TEST_F(WeakSpec, WeakArcShouldBreakCyclicReferences) {
     auto locked_root = root_weak.lock();
     ASSERT_FALSE(locked_root.has_value());
 }
+
+
+TEST_F(WeakSpec, WeakArcShouldBeCreatedFromArc) {
+    auto arc = Arc<int>::make(42);
+    Weak weak(arc);
+
+    ASSERT_TRUE(weak.is_valid());
+    ASSERT_FALSE(weak.expired());
+}
+
+TEST_F(WeakSpec, WeakArcShouldExpireWhenArcDestroyed) {
+    Weak<int> weak;
+    {
+        auto arc = Arc<int>::make(42);
+        weak = arc;
+        ASSERT_FALSE(weak.expired());
+    }
+    ASSERT_TRUE(weak.expired());
+}
+
+TEST_F(WeakSpec, WeakArcShouldPromoteToArcWhenValid) {
+    auto arc = Arc<int>::make(42);
+    Weak<int> weak(arc);
+
+    auto locked = weak.lock();
+    ASSERT_TRUE(locked.has_value());
+    locked->and_then([](auto &value) { ASSERT_EQ(value, 42); });
+}
+
+TEST_F(WeakSpec, WeakArcShouldReturnNulloptWhenExpired) {
+    Weak<int> weak;
+    {
+        auto arc = Arc<int>::make(42);
+        weak = Weak<int>(arc);
+    }
+    auto locked = weak.lock();
+    ASSERT_FALSE(locked.has_value());
+}
