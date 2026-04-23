@@ -1,6 +1,6 @@
-# Arc — Atomic Reference-Counted Smart Pointer
+# AGENTS.md
 
-Single-header library (`include/Arc.hpp`) implementing a thread-safe `Arc<T>` smart pointer with writer-preference RWLock. C++23.
+This file provides guidance to agents when working with code in this repository.
 
 ## Build & Test
 
@@ -17,9 +17,9 @@ ctest --test-dir build -R ArcShouldBeAbleToCreate
 
 ## Project Structure
 
-- `include/Arc.hpp` — entire library (header-only)
+- `include/arc/Arc.hpp` — main library (header-only, note `arc/` subdirectory)
 - `src/Arc.cpp` — empty, library is header-only
-- `test/ArcSpec.cpp` — Google Test suite
+- `test/src/*Spec.cpp` — Google Test suites (uses `*Spec.cpp` naming pattern)
 - `build/` — CMake build directory (gitignore'd)
 
 CMake fetches Google Test v1.17.0 on first configure.

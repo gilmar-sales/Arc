@@ -88,6 +88,14 @@ public:
     return m_ptr == other.m_ptr;
   }
 
+  T &operator*() const noexcept {
+    return *m_ptr->m_object;
+  }
+
+  T *operator->() const noexcept {
+    return m_ptr->m_object;
+  }
+
 private:
   friend class Arc<void>;
 
